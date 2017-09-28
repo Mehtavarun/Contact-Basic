@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Button from 'material-ui/Button';
-import {FloatingButton} from 'material-ui/FloatingActionButton';
-import {ContentAdd} from 'material-ui/svg-icons/content/add';
+//import {FloatingButton} from 'material-ui/FloatingActionButton';
+//import {ContentAdd} from 'material-ui/svg-icons/content/add';
 
 class App extends React.Component{
 
