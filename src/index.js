@@ -39,6 +39,17 @@ class App extends React.Component{
 		});
 	}
 
+	editContact(data,id){
+		var arr = this.state.contacts;
+
+		arr[id].name=data.name;
+		arr[id].email=data.email;
+		arr[id].no=data.no;
+		this.setState({
+			contacts:arr
+		});
+	}
+
 	getChildContext() {
         return { muiTheme: getMuiTheme(baseTheme) };
     }
@@ -48,7 +59,11 @@ class App extends React.Component{
 			<div>
 				<h1>Contacts &emsp;&emsp;&emsp;<FloatingButton onClick = {this.showContacts.bind(this)}> <ContentAdd/> </FloatingButton></h1>
 				{(this.state.showCt) ? <NewContact addContact={this.addContact.bind(this)}/> : null}
-				<ContactList contacts={this.state.contacts} deleteCnt={this.deleteContacts.bind(this)} addContact={this.addContact.bind(this)}/>
+				<ContactList contacts={this.state.contacts} 
+				deleteCnt={this.deleteContacts.bind(this)}
+				addContact={this.addContact.bind(this)}
+				editCnt={this.editContact.bind(this)}
+				 />
 			</div>
 		);
 	};
@@ -62,8 +77,7 @@ class ContactList extends React.Component{
 			show:[false],
 			id:-1,
 			edit:[false],
-			editId:-1,
-			contacts:this.props.contacts
+			editId:-1
 		};
 	}
 
@@ -72,6 +86,7 @@ class ContactList extends React.Component{
 		var arr = new Array(this.props.contacts.length);
 		arr.map((e)=>{
 			e = false;
+			return e;
 		})
 
 		if(id===this.state.id){
@@ -94,6 +109,28 @@ class ContactList extends React.Component{
 
 	deleteCnt(id){
 		this.props.deleteCnt(id);
+		var arr1 = new Array(this.props.contacts.length);
+		arr1.map((e)=>{
+			e = false;
+			return e;
+		});
+
+		if(this.state.editId!==id){
+			arr1[id]=false;
+		} else {
+			arr1[id] = false;
+		}
+
+		this.setState(prevState=>({
+			edit: arr1,
+			editId:id
+		}));
+
+		if(id===this.state.editId){
+			this.setState({
+				editId:-1
+			})
+		}
 	}
 
 	editCnt(id){
@@ -101,18 +138,86 @@ class ContactList extends React.Component{
 		var arr = new Array(this.props.contacts.length);
 		arr.map((e)=>{
 			e = false;
+			return e;
 		});
 
+		if(id===this.state.id){
+			arr[id]=false;
+		} else {
+			arr[id] = false;
+		}
+
 		this.setState(prevState=>({
-			show: arr
+			show: arr,
+			id:id
+		}))
+
+		if(id===this.state.id){
+			this.setState({
+				id:id
+			});
+		}
+
+		var arr1 = new Array(this.props.contacts.length);
+		arr1.map((e)=>{
+			e = false;
+			return e;
+		});
+
+		if(this.state.editId!==id){
+			arr1[id]=true;
+		} else {
+			arr1[id] = false;
+		}
+
+		this.setState(prevState=>({
+			edit: arr1,
+			editId:id
 		}));
 
-		arr[id]=true;
+		if(id===this.state.editId){
+			this.setState({
+				editId:-1
+			})
+		}
+
+	}
+
+	editCancel(id){
+		var arr = new Array(this.props.contacts.length);
+		arr.map((e)=>{
+			e = false;
+			return e;
+		});
+		this.setState({
+			edit:arr
+		})
+	}
+
+	addCont(data,id){
+		this.props.editCnt(data,id);
+		var arr1 = new Array(this.props.contacts.length);
+		arr1.map((e)=>{
+			e = false;
+			return e;
+		});
+
+		if(this.state.editId!==id){
+			arr1[id]=false;
+		} else {
+			arr1[id] = false;
+		}
+
 		this.setState(prevState=>({
-			editId: arr
+			edit: arr1,
+			editId:id
 		}));
 
-		console.log(this.state.edit[id]);
+		if(id===this.state.editId){
+			this.setState({
+				editId:-1
+			})
+		}
 	}
 
 	render(){
@@ -125,7 +230,12 @@ class ContactList extends React.Component{
 							<FloatingButton mini={true} onClick={this.editCnt.bind(this,i)}> <Edit/> </FloatingButton> &emsp;
 							<FloatingButton mini={true} backgroundColor="red" onClick={this.deleteCnt.bind(this,i)}> <ActionDelete/> </FloatingButton> <br/><br/>
 							{(this.state.show[i])?<p>Email: &emsp; {cont.email}<br/>Phone No: &emsp; {cont.no}</p>:null}
-							{(this.state.editId[i])?<editConatct edit={this.state.contacts}/>:null}
+							{(this.state.edit[i])?
+								<div>
+									<EditContact contacts={this.props.contacts[i]} addCont={this.addCont.bind(this)} id={i}/>
+									<FlatButton onClick={this.editCancel.bind(this,i)}>Cancel</FlatButton>
+									</div>:null
+								}
 						</li>)}
 				</ol>
 			</div>
@@ -133,23 +243,22 @@ class ContactList extends React.Component{
 	}
 }
 
-function editContact(){
+class EditContact extends React.Component{
 
 	constructor(props){
 		
 		super(props);
-
-		var id = this.props.id;
+		var contacts = this.props.contacts;
 		this.state = {
-			name:this.props.contacts.name[id],
-			email:this.props.contacts.email[id],
-			no:this.props.contacts.no[id]
+			name:contacts.name,
+			email:contacts.email,
+			no:contacts.no
 		};
 	}
 
 	addCont(ev){
-		this.props.addContact(this.state);
 		ev.preventDefault();
+		this.props.addCont(this.state,this.props.id);
 	}
 
 	valueChangeName(event){
@@ -171,15 +280,19 @@ function editContact(){
 	}
 
 	cancelEdit(){
-		
+		this.props.editCancel(this.props.id);
 	}
 
-	<form onSubmit={this.addCont.bind(this)}><br/>
-				Name <input type="text" name="name" value = {this.state.name[id]} onChange={this.valueChangeName.bind(this)} required/><br/><br/>
-				Email <input type="email" name="email" value = {this.state.email[id]} onChange={this.valueChangeEmail.bind(this)} /><br/><br/>
-				Mobile No. <input type="text" name="no" value = {this.state.no[id]} onChange={this.valueChangeNo.bind(this)}/><br/><br/>
-				<input type="submit" value="Save" /> <input type="button" value="Cancel" onClick={this.cancelEdit.bind(this)}/>
+	render(){
+		return(
+			<form onSubmit={this.addCont.bind(this)}><br/>
+				Name <input type="text" name="name" value = {this.state.name} onChange={this.valueChangeName.bind(this)} required/><br/><br/>
+				Email <input type="email" name="email" value = {this.state.email} onChange={this.valueChangeEmail.bind(this)} /><br/><br/>
+				Mobile No. <input type="text" name="no" value = {this.state.no} onChange={this.valueChangeNo.bind(this)}/><br/><br/>
+				<FlatButton type="submit" value="Save" >Save</FlatButton>
 			</form>
+		)
+	}
 }
 
 class NewContact extends React.Component{
@@ -222,7 +335,7 @@ class NewContact extends React.Component{
 				Name <input type="text" name="name" value = {this.state.name} onChange={this.valueChangeName.bind(this)} required/><br/><br/>
 				Email <input type="email" name="email" value = {this.state.email} onChange={this.valueChangeEmail.bind(this)} /><br/><br/>
 				Mobile No. <input type="text" name="no" value = {this.state.no} onChange={this.valueChangeNo.bind(this)}/><br/><br/>
-				<input type="submit" value="Add Contact" />
+				<FlatButton type="submit" value="Add Contact" >Add Contact</FlatButton>
 			</form>
 
 		)
