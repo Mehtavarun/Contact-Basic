@@ -52,6 +52,9 @@ const list={
 	marginLeft:'90%',
 	float:'left',
 	marginTop:'-5%'
+	},
+	form:{
+		marginLeft:'10px'
 	}
 }
 
@@ -320,9 +323,9 @@ class EditContact extends React.Component{
 
 	render(){
 		return(
-			<form onSubmit={this.addCont.bind(this)}><br/>
-				Name&emsp;&emsp;&emsp; <TextField type="text" name="name" value = {this.state.name} onChange={this.valueChangeName.bind(this)} required/><br/><br/>
-				Email&emsp;&emsp;&emsp; <TextField type="email" name="email" value = {this.state.email} onChange={this.valueChangeEmail.bind(this)} /><br/><br/>
+			<form onSubmit={this.addCont.bind(this)} style={list.form}><br/>
+				Name&emsp;&emsp;&emsp; <TextField type="text" name="name" value = {this.state.name} onChange={this.valueChangeName.bind(this)} required/><br/>
+				Email&emsp;&emsp;&emsp; <TextField type="email" name="email" value = {this.state.email} onChange={this.valueChangeEmail.bind(this)} /><br/>
 				Mobile No.&emsp; <TextField type="text" name="no" value = {this.state.no} onChange={this.valueChangeNo.bind(this)}/><br/><br/>
 				<FlatButton type="submit" value="Save">Save</FlatButton> <FlatButton onClick={this.cancelEdit.bind(this,this.props.id)} style={buttonDisplay}>Cancel</FlatButton>
 			</form>
@@ -366,9 +369,9 @@ class NewContact extends React.Component{
 
 	render(){
 		return(
-			<form onSubmit={this.addCont.bind(this)}><br/>
-				Name &emsp;&emsp;&emsp; <TextField type="text" name="name" hintText = "John" value = {this.state.name} onChange={this.valueChangeName.bind(this)} required/><br/><br/>
-				Email&emsp; &emsp;&emsp; <TextField type="email" name="email" hintText = "John@gmail.com" value = {this.state.email} onChange={this.valueChangeEmail.bind(this)} /><br/><br/>
+			<form onSubmit={this.addCont.bind(this)} style={list.form}><br/>
+				Name &emsp;&emsp;&emsp; <TextField type="text" name="name" hintText = "John" value = {this.state.name} onChange={this.valueChangeName.bind(this)} required/><br/>
+				Email&emsp; &emsp;&emsp; <TextField type="email" name="email" hintText = "John@gmail.com" value = {this.state.email} onChange={this.valueChangeEmail.bind(this)} /><br/>
 				Mobile No. &emsp; <TextField type="tel" name="no" hintText = "123-4567-890"value = {this.state.no} onChange={this.valueChangeNo.bind(this)} required/><br/><br/>
 				&emsp;&emsp;&emsp;&emsp;&emsp;<FlatButton type="submit" value="Add Contact" style = {style}>Add Contact</FlatButton>
 			</form>
