@@ -33,6 +33,10 @@ const main = {
 	width:'60%',
 	marginTop:'7%',
 	marginLeft:'20%',
+	border:'2px solid #42a5f5',
+	height:'400px',
+	paddingBottom:'5px',
+	overflowY:'scroll'
 }
 
 const list={
@@ -124,32 +128,6 @@ class ContactList extends React.Component{
 			edit:[false],
 			editId:-1
 		};
-	}
-
-	clickAct(id){
-
-		var arr = new Array(this.props.contacts.length);
-		arr.map((e)=>{
-			e = false;
-			return e;
-		})
-
-		if(id===this.state.id){
-			arr[id]=false
-		} else {
-			arr[id] = true
-		}
-
-		this.setState(prevState=>({
-			show: arr,
-			id:id
-		}));
-
-		if(id===this.state.id){
-			this.setState({
-				id:-1
-			})
-		}
 	}
 
 	deleteCnt(id){
