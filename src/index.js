@@ -9,16 +9,9 @@ import ActionDelete from 'material-ui/svg-icons/action/delete';
 import Edit from 'material-ui/svg-icons/image/edit';
 import List from 'material-ui/List/List';
 import ListItem from 'material-ui/List/ListItem';
-
 import CommunicationCall from 'material-ui/svg-icons/communication/call';
-import CommunicationChatBubble from 'material-ui/svg-icons/communication/chat-bubble';
 import {indigo500} from 'material-ui/styles/colors';
 import CommunicationEmail from 'material-ui/svg-icons/communication/email';
-
-import ContentInbox from 'material-ui/svg-icons/content/inbox';
-import ContentDrafts from 'material-ui/svg-icons/content/drafts';
-import ContentSend from 'material-ui/svg-icons/content/send';
-import Subheader from 'material-ui/Subheader';
 import AppBar from 'material-ui/AppBar';
 import TextField from 'material-ui/TextField';
 
@@ -43,10 +36,19 @@ const main = {
 }
 
 const list={
-	lists:{width:'80%',},
-	button:{
-	marginLeft:'85%',
-	marginBottom:'108%'}
+	lists:{width:'70%',
+	float:'left',
+	marginLeft:'5%'},
+	buttonl:{
+	marginLeft:'83%',
+	float:'left',
+	marginTop:'-5%'
+	},
+	buttonr:{
+	marginLeft:'90%',
+	float:'left',
+	marginTop:'-5%'
+	}
 }
 
 class App extends React.Component{
@@ -265,9 +267,7 @@ class ContactList extends React.Component{
 
 	render(){
 		return(
-			<div>
-				
-				{this.props.contacts.map((cont,i)=>
+			<div>				{this.props.contacts.map((cont,i)=>
 				<List key={i}>
 					  <ListItem style={list.lists}
 					    primaryText={cont.name}
@@ -286,13 +286,13 @@ class ContactList extends React.Component{
 					      />,
 					       ]}
 					     />
-				      <FloatingButton mini={true} onClick={this.editCnt.bind(this,i)} style = {list.button}> <Edit/> </FloatingButton> &emsp;
-					  <FloatingButton mini={true} backgroundColor="red" onClick={this.deleteCnt.bind(this,i)}> <ActionDelete/> </FloatingButton> <br/><br/>
+				      <FloatingButton mini={true} onClick={this.editCnt.bind(this,i)} style = {list.buttonl}> <Edit/> </FloatingButton> &emsp;
+					  <FloatingButton mini={true} backgroundColor="red" onClick={this.deleteCnt.bind(this,i)} style = {list.buttonr}> <ActionDelete/> </FloatingButton> <br/><br/>
 					  {(this.state.edit[i])?
-								<div>
-									<EditContact contacts={this.props.contacts[i]} addCont={this.addCont.bind(this)} id={i} editCancel={this.editCancel.bind(this)}/>
-								</div>:null
-								}
+							<div>
+								<EditContact contacts={this.props.contacts[i]} addCont={this.addCont.bind(this)} id={i} editCancel={this.editCancel.bind(this)}/>
+							</div>:null
+							}
 				</List>)
 			}
 			</div>
@@ -407,31 +407,30 @@ ReactDOM.render(<App />, document.getElementById('root'));
 
 /*{this.props.contacts.map((cont,i)=>
 				<List key={i}>
-					  <ListItem
+					  <ListItem style={list.lists}
 					    primaryText={cont.name}
 					    initiallyOpen={false}
 					    primaryTogglesNestedList={true}
 					    nestedItems={[
-					    	<ListItem
+					    	<ListItem style={list.lists}
 					        key={i}
 					        primaryText={cont.no}
 					        secondaryText="Mobile"
 					    	leftIcon={<CommunicationCall color={indigo500} />}
 					      />,
-					      <ListItem
-					        key={i+100}
+					      <ListItem key={i+100} style={list.lists}
 					        primaryText={cont.email}
 					        leftIcon={<CommunicationEmail />}
 					      />,
-					       <ListItem
-					        key={i}
-					        primaryText={"s"}
-					        leftIcon={<CommunicationEmail />}
-					      />
 					       ]}
 					     />
-				      <FloatingButton mini={true} onClick={this.editCnt.bind(this,i)}> <Edit/> </FloatingButton> &emsp;
-					  <FloatingButton mini={true} backgroundColor="red" onClick={this.deleteCnt.bind(this,i)}> <ActionDelete/> </FloatingButton> <br/><br/>
+				      <FloatingButton mini={true} onClick={this.editCnt.bind(this,i)} style = {list.buttonl}> <Edit/> </FloatingButton> &emsp;
+					  <FloatingButton mini={true} backgroundColor="red" onClick={this.deleteCnt.bind(this,i)} style = {list.buttonr}> <ActionDelete/> </FloatingButton> <br/><br/>
+					  {(this.state.edit[i])?
+							<div>
+								<EditContact contacts={this.props.contacts[i]} addCont={this.addCont.bind(this)} id={i} editCancel={this.editCancel.bind(this)}/>
+							</div>:null
+							}
 				</List>)
 			}*/
 
