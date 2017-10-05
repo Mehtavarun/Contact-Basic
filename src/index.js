@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-// import Button from 'material-ui/Button';
 import FloatingButton from 'material-ui/FloatingActionButton';
 import FlatButton from 'material-ui/FlatButton';
 import baseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
@@ -8,6 +7,47 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import ActionDelete from 'material-ui/svg-icons/action/delete';
 import Edit from 'material-ui/svg-icons/image/edit';
+import List from 'material-ui/List/List';
+import ListItem from 'material-ui/List/ListItem';
+
+import CommunicationCall from 'material-ui/svg-icons/communication/call';
+import CommunicationChatBubble from 'material-ui/svg-icons/communication/chat-bubble';
+import {indigo500} from 'material-ui/styles/colors';
+import CommunicationEmail from 'material-ui/svg-icons/communication/email';
+
+import ContentInbox from 'material-ui/svg-icons/content/inbox';
+import ContentDrafts from 'material-ui/svg-icons/content/drafts';
+import ContentSend from 'material-ui/svg-icons/content/send';
+import Subheader from 'material-ui/Subheader';
+import AppBar from 'material-ui/AppBar';
+import TextField from 'material-ui/TextField';
+
+const styles = {
+  	marginTop:'0px',
+  	marginBottom:'10px',
+};
+
+const style = {
+	paddingLeft:'10px',
+	paddingRight:'10px'
+}
+
+const buttonDisplay = {
+	marginLeft:'10%'
+}
+
+const main = {
+	width:'60%',
+	marginTop:'7%',
+	marginLeft:'20%',
+}
+
+const list={
+	lists:{width:'80%',},
+	button:{
+	marginLeft:'85%',
+	marginBottom:'108%'}
+}
 
 class App extends React.Component{
 
@@ -56,14 +96,17 @@ class App extends React.Component{
 
 	render(){
 		return(
-			<div>
-				<h1>Contacts &emsp;&emsp;&emsp;<FloatingButton onClick = {this.showContacts.bind(this)}> <ContentAdd/> </FloatingButton></h1>
+			<div style={main}>
+				<AppBar title="Contacts" iconElementRight={<FloatingButton onClick = {this.showContacts.bind(this)}  iconElementLeft=""
+					style = {styles}> 
+					<ContentAdd/> </FloatingButton>}>
+				</AppBar>
 				{(this.state.showCt) ? <NewContact addContact={this.addContact.bind(this)}/> : null}
 				<ContactList contacts={this.state.contacts} 
 				deleteCnt={this.deleteContacts.bind(this)}
 				addContact={this.addContact.bind(this)}
 				editCnt={this.editContact.bind(this)}
-				 />
+				/>
 			</div>
 		);
 	};
@@ -223,21 +266,35 @@ class ContactList extends React.Component{
 	render(){
 		return(
 			<div>
-				<ol>
-					{this.props.contacts.map((cont,i)=>
-						<li key={i}> 
-							<FlatButton key={i} onClick = {this.clickAct.bind(this,i)}>{cont.name}</FlatButton> &emsp;&emsp;
-							<FloatingButton mini={true} onClick={this.editCnt.bind(this,i)}> <Edit/> </FloatingButton> &emsp;
-							<FloatingButton mini={true} backgroundColor="red" onClick={this.deleteCnt.bind(this,i)}> <ActionDelete/> </FloatingButton> <br/><br/>
-							{(this.state.show[i])?<p>Email: &emsp; {cont.email}<br/>Phone No: &emsp; {cont.no}</p>:null}
-							{(this.state.edit[i])?
+				
+				{this.props.contacts.map((cont,i)=>
+				<List key={i}>
+					  <ListItem style={list.lists}
+					    primaryText={cont.name}
+					    initiallyOpen={false}
+					    primaryTogglesNestedList={true}
+					    nestedItems={[
+					    	<ListItem style={list.lists}
+					        key={i}
+					        primaryText={cont.no}
+					        secondaryText="Mobile"
+					    	leftIcon={<CommunicationCall color={indigo500} />}
+					      />,
+					      <ListItem key={i+100} style={list.lists}
+					        primaryText={cont.email}
+					        leftIcon={<CommunicationEmail />}
+					      />,
+					       ]}
+					     />
+				      <FloatingButton mini={true} onClick={this.editCnt.bind(this,i)} style = {list.button}> <Edit/> </FloatingButton> &emsp;
+					  <FloatingButton mini={true} backgroundColor="red" onClick={this.deleteCnt.bind(this,i)}> <ActionDelete/> </FloatingButton> <br/><br/>
+					  {(this.state.edit[i])?
 								<div>
-									<EditContact contacts={this.props.contacts[i]} addCont={this.addCont.bind(this)} id={i}/>
-									<FlatButton onClick={this.editCancel.bind(this,i)}>Cancel</FlatButton>
-									</div>:null
+									<EditContact contacts={this.props.contacts[i]} addCont={this.addCont.bind(this)} id={i} editCancel={this.editCancel.bind(this)}/>
+								</div>:null
 								}
-						</li>)}
-				</ol>
+				</List>)
+			}
 			</div>
 		)
 	}
@@ -286,10 +343,10 @@ class EditContact extends React.Component{
 	render(){
 		return(
 			<form onSubmit={this.addCont.bind(this)}><br/>
-				Name <input type="text" name="name" value = {this.state.name} onChange={this.valueChangeName.bind(this)} required/><br/><br/>
-				Email <input type="email" name="email" value = {this.state.email} onChange={this.valueChangeEmail.bind(this)} /><br/><br/>
-				Mobile No. <input type="text" name="no" value = {this.state.no} onChange={this.valueChangeNo.bind(this)}/><br/><br/>
-				<FlatButton type="submit" value="Save" >Save</FlatButton>
+				Name&emsp;&emsp;&emsp; <TextField type="text" name="name" value = {this.state.name} onChange={this.valueChangeName.bind(this)} required/><br/><br/>
+				Email&emsp;&emsp;&emsp; <TextField type="email" name="email" value = {this.state.email} onChange={this.valueChangeEmail.bind(this)} /><br/><br/>
+				Mobile No.&emsp; <TextField type="text" name="no" value = {this.state.no} onChange={this.valueChangeNo.bind(this)}/><br/><br/>
+				<FlatButton type="submit" value="Save">Save</FlatButton> <FlatButton onClick={this.cancelEdit.bind(this,this.props.id)} style={buttonDisplay}>Cancel</FlatButton>
 			</form>
 		)
 	}
@@ -332,10 +389,10 @@ class NewContact extends React.Component{
 	render(){
 		return(
 			<form onSubmit={this.addCont.bind(this)}><br/>
-				Name <input type="text" name="name" value = {this.state.name} onChange={this.valueChangeName.bind(this)} required/><br/><br/>
-				Email <input type="email" name="email" value = {this.state.email} onChange={this.valueChangeEmail.bind(this)} /><br/><br/>
-				Mobile No. <input type="text" name="no" value = {this.state.no} onChange={this.valueChangeNo.bind(this)}/><br/><br/>
-				<FlatButton type="submit" value="Add Contact" >Add Contact</FlatButton>
+				Name &emsp;&emsp;&emsp; <TextField type="text" name="name" hintText = "John" value = {this.state.name} onChange={this.valueChangeName.bind(this)} required/><br/><br/>
+				Email&emsp; &emsp;&emsp; <TextField type="email" name="email" hintText = "John@gmail.com" value = {this.state.email} onChange={this.valueChangeEmail.bind(this)} /><br/><br/>
+				Mobile No. &emsp; <TextField type="tel" name="no" hintText = "123-4567-890"value = {this.state.no} onChange={this.valueChangeNo.bind(this)} required/><br/><br/>
+				&emsp;&emsp;&emsp;&emsp;&emsp;<FlatButton type="submit" value="Add Contact" style = {style}>Add Contact</FlatButton>
 			</form>
 
 		)
@@ -348,3 +405,51 @@ App.childContextTypes = {
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
+/*{this.props.contacts.map((cont,i)=>
+				<List key={i}>
+					  <ListItem
+					    primaryText={cont.name}
+					    initiallyOpen={false}
+					    primaryTogglesNestedList={true}
+					    nestedItems={[
+					    	<ListItem
+					        key={i}
+					        primaryText={cont.no}
+					        secondaryText="Mobile"
+					    	leftIcon={<CommunicationCall color={indigo500} />}
+					      />,
+					      <ListItem
+					        key={i+100}
+					        primaryText={cont.email}
+					        leftIcon={<CommunicationEmail />}
+					      />,
+					       <ListItem
+					        key={i}
+					        primaryText={"s"}
+					        leftIcon={<CommunicationEmail />}
+					      />
+					       ]}
+					     />
+				      <FloatingButton mini={true} onClick={this.editCnt.bind(this,i)}> <Edit/> </FloatingButton> &emsp;
+					  <FloatingButton mini={true} backgroundColor="red" onClick={this.deleteCnt.bind(this,i)}> <ActionDelete/> </FloatingButton> <br/><br/>
+				</List>)
+			}*/
+
+
+/*
+<ol>
+					{this.props.contacts.map((cont,i)=>
+						<li key={i}> 
+							<FlatButton key={i} onClick = {this.clickAct.bind(this,i)}  >{cont.name}</FlatButton> &emsp;&emsp;
+							<FloatingButton mini={true} onClick={this.editCnt.bind(this,i)}> <Edit/> </FloatingButton> &emsp;
+							<FloatingButton mini={true} backgroundColor="red" onClick={this.deleteCnt.bind(this,i)}> <ActionDelete/> </FloatingButton> <br/><br/>
+							{(this.state.show[i])?<p>Email: &emsp; <TextField disabled="true" value={cont.email}/><br/>Phone No: &emsp; <TextField disabled="true" value={cont.no}/></p>:null}
+							{(this.state.edit[i])?
+								<div>
+									<EditContact contacts={this.props.contacts[i]} addCont={this.addCont.bind(this)} id={i} editCancel={this.editCancel.bind(this)}/>
+								</div>:null
+								}
+						</li>)
+				}
+				</ol>
+				*/
