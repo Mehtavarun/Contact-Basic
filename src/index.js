@@ -14,6 +14,9 @@ import {indigo500} from 'material-ui/styles/colors';
 import CommunicationEmail from 'material-ui/svg-icons/communication/email';
 import AppBar from 'material-ui/AppBar';
 import TextField from 'material-ui/TextField';
+import Dialog from 'material-ui/Dialog';
+import Divider from 'material-ui/Divider';
+import Paper from 'material-ui/Paper';
 import './index.css';
 
 class App extends React.Component{
@@ -24,13 +27,16 @@ class App extends React.Component{
 			contacts:[],
 			showCt: false,
 			addOrEdit:true,
+			noCnt:true,
+			personal:{}
 		}
 	}
 
 	addContact(c){
 		this.setState(prevState => ({
 			contacts:[...prevState.contacts,c],
-			showCt:!prevState.showCt
+			showCt:!prevState.showCt,
+			noCnt:false
 		}));
 	}
 
@@ -43,8 +49,13 @@ class App extends React.Component{
 	deleteContacts(id){
 		this.state.contacts.splice(id,1);
 		this.setState({
-			contacts:this.state.contacts
+			contacts:this.state.contacts,
 		});
+		if(this.state.contacts.length===0){
+				this.setState({
+				noCnt:true
+			});
+		}
 	}
 
 	editContact(data,id){
@@ -64,36 +75,133 @@ class App extends React.Component{
 		}))
 	}
 
+	personalInfo(details){
+		this.setState({
+			personal:details
+		})
+	}
+
 	getChildContext() {
         return { muiTheme: getMuiTheme(baseTheme) };
     }
 
 	render(){
 		return(
-			<div className="main">
-					<AppBar title="Contacts" 
-					iconElementRight={
-					(this.state.addOrEdit)?
-						<FloatingButton onClick = {this.showContacts.bind(this)} disabled = {false}> <ContentAdd/> </FloatingButton>
-							:
-						<FloatingButton onClick = {this.showContacts.bind(this)} disabled = {true}> <ContentAdd/> </FloatingButton>
-					} 	
-					className="styles" showMenuIconButton={false}>
+				<div className="main">
+					<Personal personalDetails={this.personalInfo.bind(this)}/>
+
+					<AppBar title="Contacts"
+						iconElementRight={
+							(this.state.addOrEdit)?
+								<FloatingButton onClick = {this.showContacts.bind(this)} disabled = {false}> <ContentAdd/> </FloatingButton>
+									:
+								<FloatingButton onClick = {this.showContacts.bind(this)} disabled = {true}> <ContentAdd/> </FloatingButton>
+							} 	
+						className="styles" showMenuIconButton={false}>
 					</AppBar>
-				<div className="right">
-					{(this.state.showCt) ? <NewContact addContact={this.addContact.bind(this)}/> : null}
+
+					<div className="right">
+						{(this.state.showCt) ? <NewContact addContact={this.addContact.bind(this)}/> : null}
+						{(!this.state.showCt) ? <PersonalDetails details={this.state.personal}/> : null}
+					</div>
+
+					{(this.state.noCnt)?	
+						<h1 id="h1">"NO CONTACTS <br/>TO SHOW"</h1>
+						 :
+						<div className="left">
+							<ContactList contacts={this.state.contacts} 
+							deleteCnt={this.deleteContacts.bind(this)}
+							addContact={this.addContact.bind(this)}
+							editCnt={this.editContact.bind(this)}
+							adOrEd={this.adOrEd.bind(this)}
+							showCt={this.state.showCt}
+							/>
+						</div>
+					}
 				</div>
-				<div className="left">
-					<ContactList contacts={this.state.contacts} 
-					deleteCnt={this.deleteContacts.bind(this)}
-					addContact={this.addContact.bind(this)}
-					editCnt={this.editContact.bind(this)}
-					adOrEd={this.adOrEd.bind(this)}
-					/>
-				</div>
-			</div>
+			
 		);
 	};
+}
+
+function PersonalDetails(props){
+
+	return(<form>
+			<Paper zDepth={2} className="Paper">
+				<h2>Personal Details</h2>
+				<Divider/><br/>
+				Name<br/>
+				 <TextField type="text" value={props.details.name} disabled={true}/><br/><br/>
+				Email<br/>
+				 <TextField type="text" value={props.details.email} disabled={true}/><br/><br/>
+				Phone<br/>
+				 <TextField type="text" value={props.details.no} disabled={true}/><br/><br/>
+			</Paper>
+		</form>
+		)
+}
+
+class Personal extends React.Component{
+
+	constructor(props){
+		super();
+		this.state={
+			name:'',
+			email:'',
+			no:'',
+			open:true
+		}
+	}
+
+	valueChangeName(event){
+		this.setState({
+			name:event.target.value
+		})
+	}
+
+	valueChangeEmail(event){
+		this.setState({
+			email:event.target.value
+		})
+	}
+
+	valueChangeNo(event){
+		this.setState({
+			no:event.target.value
+		})
+	}
+
+	handleOpen = () => {
+		this.setState({open: true});
+	};
+
+	handleClose = (ev) => {
+		this.setState({open: false});
+		var details = {
+			name:this.state.name,
+			email:this.state.email,
+			no:this.state.no
+		};
+		this.props.personalDetails(details);
+	};
+
+	render(){ 
+		return(
+			<Dialog className="personal"
+	          title="Your Personal Details"
+	          actions={<FlatButton label="Ok" primary={true} keyboardFocused={true} onClick={this.handleClose.bind(this)}/>}
+	          modal={false}
+	          open={this.state.open}
+	          onRequestClose={this.handleClose}
+	        >
+		        <form className="form3">
+					&emsp; <TextField errorText="This field is required" className="tf" type="text" placeholder='Name' name="name" value = {this.state.name} onChange={this.valueChangeName.bind(this)} /><br/>
+					&emsp; <TextField errorText="This field is required" className="tf" type="email" placeholder='Email' name="email" value = {this.state.email} onChange={this.valueChangeEmail.bind(this)} /><br/>
+					&emsp; <TextField errorText="This field is required" type="text" name="no" className="tf" placeholder='1234-567-890' value = {this.state.no} onChange={this.valueChangeNo.bind(this)} /><br/><br/>
+				</form>
+			</Dialog>
+			)
+	}
 }
 
 class ContactList extends React.Component{
@@ -101,11 +209,12 @@ class ContactList extends React.Component{
 	constructor(props){
 		super(props);
 		this.state={
-			show:[false],
-			id:-1,
 			edit:[false],
 			editId:-1,
 		};
+		if(this.props.showCt){
+			
+		}
 	}
 
 	deleteCnt(id){
@@ -228,7 +337,7 @@ class ContactList extends React.Component{
 					      />
 					       ]}
 					     />
-				      <FloatingButton mini={true} onClick={this.editCnt.bind(this,i)} className="buttonl"> <Edit/> </FloatingButton> &emsp;
+				      <FloatingButton mini={true} onClick={this.editCnt.bind(this,i)} className="buttonl" disabled={this.props.showCt}> <Edit/> </FloatingButton> &emsp;
 					  <FloatingButton mini={true} backgroundColor="red" onClick={this.deleteCnt.bind(this,i)} className="buttonr"> <ActionDelete/> </FloatingButton> <br/><br/>
 					  {(this.state.edit[i])?
 							<div>
@@ -289,10 +398,14 @@ class EditContact extends React.Component{
 	render(){
 		return(
 			<form onSubmit={this.addCont.bind(this)} className="form2"><br/>
+			<Paper zDepth={2} className="Paper">	
+				<h3>Editing Contacts</h3>	
+				<Divider/>	
 				Name&emsp;&emsp;&emsp; <TextField className="TextField2" type="text" name="name" value = {this.state.name} onChange={this.valueChangeName.bind(this)} required/><br/>
 				Email&emsp;&emsp;&emsp; <TextField className="TextField2" type="email" name="email" value = {this.state.email} onChange={this.valueChangeEmail.bind(this)} /><br/>
 				Mobile No.&emsp; <TextField type="text" name="no" className="TextField2" value = {this.state.no} onChange={this.valueChangeNo.bind(this)}/><br/><br/>
 				<FlatButton type="submit" value="Save">Save</FlatButton> <FlatButton onClick={this.cancelEdit.bind(this,this.props.id)} className="buttonDisplay">Cancel</FlatButton>
+			</Paper>
 			</form>
 		)
 	}
@@ -335,12 +448,15 @@ class NewContact extends React.Component{
 	render(){
 		return(
 			<form onSubmit={this.addCont.bind(this)} className="form1"><br/>
+			<Paper zDepth={2} className="Paper">
+			<h2>New Contact</h2>
+			<Divider/><br/>
 				&emsp; <TextField type="text" name="name" hintText = "John" value = {this.state.name} onChange={this.valueChangeName.bind(this)} required/><br/>
 				&emsp; <TextField type="email" name="email" hintText = "John@gmail.com" value = {this.state.email} onChange={this.valueChangeEmail.bind(this)} /><br/>
 				&emsp; <TextField type="tel" name="no" hintText = "123-4567-890"value = {this.state.no} onChange={this.valueChangeNo.bind(this)} required/><br/><br/>
 				&emsp;&emsp;&emsp;&emsp;&emsp;<FlatButton type="submit" value="Add Contact" className="style">Add Contact</FlatButton>
+			</Paper>
 			</form>
-
 		)
 	}
 }
